@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<section class="page-head">
+  <div>
+    <p class="crumb"><a href="/">Задачи</a> / карточка</p>
+    <h1><%= task.title %></h1>
+  </div>
+  <span class="badge badge-<%= task.status %>"><%= statusLabels[task.status] %></span>
+</section>
+
+<div class="grid">
+  <form class="panel form" method="post" action="/tasks/<%= task.id %>">
+    <h2 class="panel-title">Редактирование</h2>
+    <label>
+      Название
+      <input type="text" name="title" maxlength="120" required value="<%= task.title %>" />
+    </label>
+    <label>
+      Описание
+      <textarea name="description" rows="5"><%= task.description %></textarea>
+    </label>
+    <div class="form-row">
+      <label>
+        Статус
+        <select name="status">
+          <option value="pending" <%= task.status === 'pending' ? 'selected' : '' %>>Ожидает</option>
+          <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>В работе</option>
+          <option value="done" <%= task.status === 'done' ? 'selected' : '' %>>Выполнена</option>
+        </select>
+      </label>
+      <label>
+        Ожидаемая дата завершения
+        <input type="date" name="dueDate" value="<%= task.dueDate || '' %>" />
+      </label>
+    </div>
+    <p class="muted tiny">
+      Создана <%= formatDateTime(task.createdAt) %> · обновлена <%= formatDateTime(task.updatedAt) %>
+      <% if (task.dueDate && isOverdue(task.dueDate, task.status)) { %>
+        · <span class="overdue">срок просрочен</span>
+      <% } %>
+    </p>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Сохранить</button>
+    </div>
+  </form>
+
+  <aside class="stack">
+    <section class="panel">
+      <h2 class="panel-title">Вложения</h2>
+      <form class="upload" method="post" action="/tasks/<%= task.id %>/files" enctype="multipart/form-data">
+        <input type="file" name="file" required />
+        <button class="btn btn-primary" type="submit">Прикрепить</button>
+      </form>
+      <p class="muted tiny">До 10 МБ. Имя файла с кириллицей сохраняется как есть.</p>
+
+      <% if (task.attachments.length === 0) { %>
+        <p class="muted">Файлов пока нет.</p>
+      <% } else { %>
+        <ul class="files">
+          <% task.attachments.forEach((file) => { %>
+            <li>
+              <div>
+                <a href="/tasks/<%= task.id %>/files/<%= file.id %>"><%= file.originalName %></a>
+                <p class="muted tiny"><%= formatSize(file.size) %> · <%= formatDateTime(file.uploadedAt) %></p>
+              </div>
+              <form method="post" action="/tasks/<%= task.id %>/files/<%= file.id %>/delete">
+                <button class="btn btn-ghost btn-small" type="submit">Удалить</button>
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+
+    <form class="panel danger" method="post" action="/tasks/<%= task.id %>/delete">
+      <h2 class="panel-title">Удалить задачу</h2>
+      <p class="muted">Вложения с диска тоже будут удалены.</p>
+      <button class="btn btn-danger" type="submit">Удалить</button>
+    </form>
+  </aside>
+</div>
+
+<%- include('partials/footer') %>

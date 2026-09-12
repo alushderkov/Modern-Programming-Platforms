@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/tasks.json
+uploads/*
+!uploads/.gitkeep
+*.log
+.DS_Store
+README.md

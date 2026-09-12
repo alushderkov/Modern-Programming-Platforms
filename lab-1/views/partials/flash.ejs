@@ -1,0 +1,15 @@
+<%
+  const notices = {
+    created: 'Задача создана.',
+    deleted: 'Задача удалена.',
+    updated: 'Задача обновлена.',
+    'file-added': 'Файл прикреплён.',
+    'file-removed': 'Файл удалён.',
+  };
+%>
+<% if (notice && notices[notice]) { %>
+  <p class="banner banner-ok"><%= notices[notice] %></p>
+<% } %>
+<% if (error) { %>
+  <p class="banner banner-err"><%= error %></p>
+<% } %>

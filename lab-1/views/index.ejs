@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<section class="page-head">
+  <div>
+    <h1>Задачи</h1>
+    <p class="muted">Сервер отдаёт готовую HTML-разметку. Изменения уходят POST-формами.</p>
+  </div>
+  <p class="count"><%= tasks.length %></p>
+</section>
+
+<nav class="filters" aria-label="Фильтр по статусу">
+  <a class="chip <%= currentStatus === 'all' ? 'is-active' : '' %>" href="/">Все</a>
+  <a class="chip <%= currentStatus === 'pending' ? 'is-active' : '' %>" href="/?status=pending">Ожидают</a>
+  <a class="chip <%= currentStatus === 'in_progress' ? 'is-active' : '' %>" href="/?status=in_progress">В работе</a>
+  <a class="chip <%= currentStatus === 'done' ? 'is-active' : '' %>" href="/?status=done">Выполнены</a>
+</nav>
+
+<% if (tasks.length === 0) { %>
+  <div class="empty">
+    <h2>Пока пусто</h2>
+    <p>Создайте задачу или снимите фильтр статуса.</p>
+    <a class="btn btn-primary" href="/tasks/new">Добавить задачу</a>
+  </div>
+<% } else { %>
+  <ul class="task-list">
+    <% tasks.forEach((task) => { %>
+      <li>
+        <a class="task-card" href="/tasks/<%= task.id %>">
+          <span class="status-rail status-<%= task.status %>"></span>
+          <div class="task-card-body">
+            <div class="task-card-top">
+              <h2><%= task.title %></h2>
+              <span class="badge badge-<%= task.status %>"><%= statusLabels[task.status] %></span>
+            </div>
+            <p class="task-meta">
+              <% if (task.dueDate) { %>
+                <span class="<%= isOverdue(task.dueDate, task.status) ? 'overdue' : '' %>">
+                  до <%= formatDate(task.dueDate) %>
+                </span>
+              <% } else { %>
+                <span class="muted">без срока</span>
+              <% } %>
+              <span>·</span>
+              <span><%= task.attachments.length %> влож.</span>
+            </p>
+          </div>
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<%- include('partials/footer') %>
