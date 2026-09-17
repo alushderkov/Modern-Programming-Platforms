@@ -1,0 +1,87 @@
+import { z } from 'zod';
+import type { RequestHandler } from 'express';
+import mongoose from 'mongoose';
+import { FILM_STATUSES } from './types';
+
+const emptyToNull = (value: unknown) => {
+  if (value === '' || value === undefined || value === null) {
+    return null;
+  }
+  return value;
+};
+
+const yearSchema = z.preprocess(
+  emptyToNull,
+  z.union([
+    z.null(),
+    z.coerce.number().int().min(1888, 'Год не раньше 1888').max(2100, 'Год слишком большой'),
+  ]),
+);
+
+const ratingSchema = z.preprocess(
+  emptyToNull,
+  z.union([
+    z.null(),
+    z.coerce.number().int().min(1, 'Оценка от 1').max(10, 'Оценка до 10'),
+  ]),
+);
+
+export const filmBodySchema = z.object({
+  title: z.string({ required_error: 'Название обязательно' }).trim().min(1, 'Название обязательно').max(120, 'Название длиннее 120 символов'),
+  director: z.string({ required_error: 'Режиссёр обязателен' }).trim().min(1, 'Режиссёр обязателен').max(120, 'Имя режиссёра длиннее 120 символов'),
+  year: yearSchema.optional().default(null),
+  status: z.enum(FILM_STATUSES, {
+    errorMap: () => ({ message: 'Статус: planned, watching или watched' }),
+  }),
+  rating: ratingSchema.optional().default(null),
+  notes: z.preprocess((value) => (value === undefined || value === null ? '' : value), z.string().max(2000, 'Заметки длиннее 2000 символов')),
+});
+
+export const listQuerySchema = z.object({
+  status: z.enum(FILM_STATUSES).optional(),
+});
+
+export type FilmBody = z.infer<typeof filmBodySchema>;
+
+export function validateBody<T extends z.ZodType>(schema: T): RequestHandler {
+  return (req, res, next) => {
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'Некорректные данные',
+        details: parsed.error.issues.map((issue) => ({
+          field: issue.path.join('.') || 'body',
+          message: issue.message,
+        })),
+      });
+    }
+    req.body = parsed.data;
+    next();
+  };
+}
+
+export function validateQuery<T extends z.ZodType>(schema: T): RequestHandler {
+  return (req, res, next) => {
+    const parsed = schema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'Некорректные параметры запроса',
+        details: parsed.error.issues.map((issue) => ({
+          field: issue.path.join('.') || 'query',
+          message: issue.message,
+        })),
+      });
+    }
+    res.locals.query = parsed.data;
+    next();
+  };
+}
+
+export function requireId(): RequestHandler {
+  return (req, res, next) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ error: 'Фильм не найден' });
+    }
+    next();
+  };
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+uploads/
+*.log
+.env*
+.DS_Store
+client/dist/
+server/dist/
+server/uploads/
+README.md
