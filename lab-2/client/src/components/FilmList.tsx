@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Film } from '../types';
 import { STATUS_LABELS } from '../types';
-import { posterSrc } from '../api';
+import { PosterImage } from './PosterImage';
 
 interface Props {
   films: Film[];
@@ -21,26 +21,23 @@ export function FilmList({ films, selectedId }: Props): ReactNode {
 
   return (
     <ul className="grid">
-      {films.map((film) => {
-        const src = posterSrc(film);
-        return (
-          <li key={film.id}>
-            <Link className={`card ${selectedId === film.id ? 'is-active' : ''}`} to={`/${film.id}`}>
-              <div className="poster">
-                {src ? <img src={src} alt="" /> : <span>без кадра</span>}
-              </div>
-              <div className="card-body">
-                <h2>{film.title}</h2>
-                <p className="muted">
-                  {film.director}
-                  {film.year ? ` · ${film.year}` : ''}
-                </p>
-                <span className={`badge badge-${film.status}`}>{STATUS_LABELS[film.status]}</span>
-              </div>
-            </Link>
-          </li>
-        );
-      })}
+      {films.map((film) => (
+        <li key={film.id}>
+          <Link className={`card ${selectedId === film.id ? 'is-active' : ''}`} to={`/${film.id}`}>
+            <div className="poster">
+              <PosterImage filmId={film.id} updatedAt={film.updatedAt} hasPoster={film.hasPoster} />
+            </div>
+            <div className="card-body">
+              <h2>{film.title}</h2>
+              <p className="muted">
+                {film.director}
+                {film.year ? ` · ${film.year}` : ''}
+              </p>
+              <span className={`badge badge-${film.status}`}>{STATUS_LABELS[film.status]}</span>
+            </div>
+          </Link>
+        </li>
+      ))}
     </ul>
   );
 }

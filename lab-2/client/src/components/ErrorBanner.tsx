@@ -14,7 +14,11 @@ export function ErrorBanner({ error }: Props): ReactNode {
     return (
       <div className="banner banner-err" role="alert">
         <strong>{error.message}</strong>
-        {error.status ? <span className="muted"> · HTTP {error.status}</span> : null}
+        <span className="muted">
+          {' '}
+          · HTTP {error.status}
+          {error.code ? ` · ${error.code}` : ''}
+        </span>
         {error.details.length > 0 ? (
           <ul>
             {error.details.map((item) => (

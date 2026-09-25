@@ -25,6 +25,14 @@ services:
       PORT: 4000
       MONGO_URI: mongodb://mongo:27017/kadr
       UPLOAD_DIR: /app/uploads
+      JWT_SECRET: kadr-lab-dev-secret-change-me
+      JWT_ACCESS_TTL_SEC: "900"
+      JWT_REFRESH_TTL_SEC: "604800"
+      MAX_LOGIN_ATTEMPTS: "5"
+      LOCKOUT_MINUTES: "15"
+      MAX_SESSIONS: "5"
+      APP_URL: http://localhost:8080
+      LOG_LEVEL: info
     volumes:
       - api_uploads:/app/uploads
     ports:

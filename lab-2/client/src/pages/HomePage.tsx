@@ -14,13 +14,17 @@ import {
   uploadPoster,
 } from '../api';
 import type { Film, FilmPayload, FilmStatus } from '../types';
-import { STATUS_LABELS } from '../types';
+import { STATUS_LABELS, hasMinRole } from '../types';
+import { useAuth } from '../auth';
 
 export function HomePage(): ReactNode {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isCreate = location.pathname === '/new';
+  const canWrite = hasMinRole(user?.role, 'editor');
+  const canDelete = hasMinRole(user?.role, 'admin');
 
   const [status, setStatus] = useState<FilmStatus | 'all'>('all');
   const [films, setFilms] = useState<Film[]>([]);
@@ -33,6 +37,12 @@ export function HomePage(): ReactNode {
     const items = await listFilms(status);
     setFilms(items);
   }, [status]);
+
+  useEffect(() => {
+    if (isCreate && !canWrite) {
+      navigate('/', { replace: true });
+    }
+  }, [isCreate, canWrite, navigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -141,9 +151,13 @@ export function HomePage(): ReactNode {
         <section>
           <div className="section-head">
             <h1>Каталог</h1>
-            <Link className="btn btn-primary" to="/new">
-              Новый фильм
-            </Link>
+            {canWrite ? (
+              <Link className="btn btn-primary" to="/new">
+                Новый фильм
+              </Link>
+            ) : (
+              <span className="muted">Просмотр · роль «зритель»</span>
+            )}
           </div>
           <nav className="filters" aria-label="Фильтр">
             <button className={status === 'all' ? 'chip is-active' : 'chip'} type="button" onClick={() => setStatus('all')}>
@@ -164,30 +178,35 @@ export function HomePage(): ReactNode {
         </section>
 
         <aside className="panel">
-          {isCreate ? (
+          {isCreate && canWrite ? (
             <>
               <h2>Новый фильм</h2>
-              <p className="muted">POST /api/films, затем при файле POST …/poster. Страница не перезагружается.</p>
+              <p className="muted">POST /api/films · 201 Created. Нужна роль редактора или админа.</p>
               <FilmForm submitting={submitting} onSubmit={handleSubmit} />
             </>
           ) : selected ? (
             <>
               <h2>{selected.title}</h2>
-              <p className="muted">PUT обновляет карточку, DELETE удаляет запись.</p>
+              <p className="muted">
+                {canWrite ? 'PUT обновляет карточку.' : 'Только чтение.'} {canDelete ? 'DELETE фильма — админ, 204.' : ''}
+              </p>
               <FilmForm
                 film={selected}
                 submitting={submitting}
+                readOnly={!canWrite}
                 onSubmit={handleSubmit}
-                onDeletePoster={handleDeletePoster}
+                onDeletePoster={canWrite ? handleDeletePoster : undefined}
               />
-              <button className="btn btn-danger" type="button" disabled={submitting} onClick={() => void handleDelete()}>
-                Удалить фильм
-              </button>
+              {canDelete ? (
+                <button className="btn btn-danger" type="button" disabled={submitting} onClick={() => void handleDelete()}>
+                  Удалить фильм
+                </button>
+              ) : null}
             </>
           ) : (
             <div className="empty compact">
               <h2>Карточка</h2>
-              <p>Выберите фильм слева или создайте новый.</p>
+              <p>Выберите фильм слева{canWrite ? ' или создайте новый' : ''}.</p>
             </div>
           )}
         </aside>

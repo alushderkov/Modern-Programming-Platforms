@@ -41,9 +41,27 @@ h2 { font-size: 1.15rem; }
 .topbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
   padding: 0.9rem 1rem;
   border-radius: 18px;
   margin-bottom: 1.1rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.role-pill {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: #3a3018;
+  color: var(--gold);
+  font-size: 0.8rem;
 }
 
 .brand { display: flex; gap: 0.75rem; align-items: center; }
@@ -176,8 +194,52 @@ h2 { font-size: 1.15rem; }
 }
 
 .banner-err { border-color: #6b2a32; background: #2a1518; }
+.banner-ok { border-color: #1d3326; background: #15221a; }
 .banner ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+
+.auth-wrap {
+  display: grid;
+  place-items: start center;
+  padding-top: 1rem;
+}
+
+.auth-card { max-width: 460px; width: 100%; }
+.auth-links { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-top: 0.8rem; }
+.demo-creds { margin-top: 0.9rem; line-height: 1.5; }
+.demo-creds code { font-size: 0.82rem; }
+
+.session-list { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 0.7rem; }
+.session-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 16px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.users-table th, .users-table td {
+  text-align: left;
+  padding: 0.65rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.users-table select {
+  font: inherit;
+  color: var(--ink);
+  background: #101218;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+}
 
 @media (max-width: 900px) {
   .layout, .form-row { grid-template-columns: 1fr; }
+  .hide-narrow { display: none; }
 }

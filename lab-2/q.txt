@@ -1,0 +1,5 @@
+curl -s http://localhost:4000/api/films
+curl -s -X POST http://localhost:4000/api/films \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"Драйв\",\"director\":\"Рефит Анан\",\"year\":2011,\"status\":\"planned\",\"rating\":null,\"notes\":\"\"}"
+curl -s -X POST http://localhost:4000/api/films/ID/poster -F "poster=@./cover.jpg"
