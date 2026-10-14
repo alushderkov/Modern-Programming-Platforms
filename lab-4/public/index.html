@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Клетки — захват поля</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <div>
+          <h1>Клетки</h1>
+          <p class="tagline">
+            Кликни клетку — она станет твоей. Все игроки видят ход сразу.
+          </p>
+        </div>
+        <div id="timer" class="timer">1:00</div>
+        <div id="status" class="status is-off">Нет сети</div>
+      </header>
+
+      <main class="layout">
+        <aside class="panel">
+          <section>
+            <h2>Имя</h2>
+            <form id="name-form" class="name-form">
+              <div class="name-row">
+                <input id="name-input" type="text" maxlength="20" required />
+                <button type="submit">Ок</button>
+              </div>
+            </form>
+          </section>
+
+          <section>
+            <h2>Счёт</h2>
+            <ul id="players" class="players"></ul>
+          </section>
+
+          <section>
+            <button id="reset" type="button" class="reset">Новая игра</button>
+            <p id="msg" class="hint"></p>
+          </section>
+        </aside>
+
+        <section class="table">
+          <div id="board" class="board"></div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

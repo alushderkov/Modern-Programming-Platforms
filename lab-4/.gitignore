@@ -1,0 +1,4 @@
+node_modules/
+data/game.json
+*.log
+.DS_Store

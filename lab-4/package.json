@@ -1,0 +1,17 @@
+{
+  "name": "spp-lab-4",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Лабораторная №4: многопользовательская веб-игра в реальном времени (WebSocket)",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
